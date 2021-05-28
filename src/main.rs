@@ -3,7 +3,6 @@ use async_graphql::http::{playground_source, GraphQLPlaygroundConfig,MultipartOp
 use async_graphql::Schema;
 use async_graphql_actix_web::{Request, Response, WSSubscription};
 use mongodb::{Client, Collection, options::ClientOptions};
-
 mod controllers;
 use controllers::{MessageSchema, MutationRoot, QueryRoot, Storage, SubscriptionRoot,MyToken};
 use actix_cors::Cors;
@@ -11,6 +10,7 @@ use actix_files as fs;
 mod models;
 use models::support::SupportCollection;
 use load_dotenv::load_dotenv;
+use std::env;
 
 async fn index(schema: web::Data<MessageSchema>, req: HttpRequest, gql_request: Request) -> Response {
     let token = req
@@ -78,7 +78,10 @@ async fn main() -> std::io::Result<()> {
             container: collection_container,
         })
         .finish();
-
+        let port: u16 = env::var("PORT")
+        .unwrap_or_else(|_| "8000".to_string())
+        .parse()
+        .expect("PORT must be a number");
     println!("Playground: http://localhost:8000");
 
     HttpServer::new(move || {
@@ -98,13 +101,13 @@ async fn main() -> std::io::Result<()> {
                     .guard(guard::Get())
                     .guard(guard::Header("upgrade", "websocket"))
                     .to(index_ws),)
-            .service(fs::Files::new("/media", "/static/uploads/.").show_files_listing())
+      
 
             .service(web::resource("/").guard(guard::Get()).to(index_playground))
             
         })
     
-    .bind("127.0.0.1:8000")?
+    .bind(("0.0.0.0".to_string(), port))?
     .run()
     .await
 }
