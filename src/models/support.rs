@@ -32,12 +32,12 @@ impl SupportCollection {
     //     Ok(self.collection.find(None, None).await?)
     // }
 
-    pub async fn find_all_threads_for_client(&self,client_id:&str) -> Result<Cursor, Error> {
+    pub async fn find_all_threads_for_project(&self,client_id:&str) -> Result<Cursor, Error> {
         Ok(self
             .collection
             .find(
                 doc! {
-                    "client_id":ObjectId::with_string(client_id).unwrap()
+                    "project_id":ObjectId::with_string(client_id).unwrap()
                 },
                 None,
             )

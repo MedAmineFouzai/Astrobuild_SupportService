@@ -1,4 +1,5 @@
 mod simple_broker;
+use bson::oid::ObjectId;
 use simple_broker::SimpleBroker;
 mod schema;
 
@@ -53,9 +54,9 @@ impl QueryRoot {
 
 	}
 
-	async fn threads(&self, ctx: &Context<'_>,client_id:String) -> FieldResult<Vec<ThreadObject>> {
-		println!("data:{:?}","dd");
-		match ctx.data_unchecked::<crate::AppState>().container.support.find_all_threads_for_client(&client_id).await{
+	async fn get_project_threads(&self, ctx: &Context<'_>,project_id:String) -> FieldResult<Vec<ThreadObject>> {
+
+		match ctx.data_unchecked::<crate::AppState>().container.support.find_all_threads_for_project(&project_id).await{
     		Ok(cursor) => {
 
 				let threads: Vec<ThreadSerializeObject> = cursor
@@ -102,9 +103,10 @@ pub struct MutationRoot;
 #[Object]
 impl MutationRoot {
 
-	async fn create_thread(&self, ctx: &Context<'_>,title:String,thread_description:String)->FieldResult<ID>{
+	async fn create_thread(&self, ctx: &Context<'_>,project_id:String,title:String,thread_description:String)->FieldResult<ID>{
 
 		match ctx.data_unchecked::<crate::AppState>().container.support.insert_one(Thread{
+			project_id:ObjectId::with_string(&project_id).unwrap(),
 			title:title,
 			thread_description:thread_description,
 			user_messages:Some(vec![])

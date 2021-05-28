@@ -32,8 +32,10 @@ pub struct ThreadObject {
     pub user_messages:Option<Vec<UserMessageObject>>,
 
 }
+
 #[derive(Debug,Clone,Deserialize,Serialize)]
 pub struct Thread {
+    pub project_id:ObjectId,
     pub title:String,
     pub thread_description:String,
     pub user_messages:Option<Vec<UserMessageObject>>,
@@ -42,6 +44,7 @@ pub struct Thread {
 #[derive(Debug,Clone,Deserialize,Serialize)]
 pub struct ThreadSerializeObject {
     pub id:String,
+    pub project_id:String,
     pub title:String,
     pub thread_description:String,
     pub user_messages:Option<Vec<UserMessageObject>>,
@@ -51,6 +54,7 @@ pub struct ThreadSerializeObject {
 #[derive(Debug,Clone,Deserialize,Serialize)]
 pub struct ThreadDeserializeObject {
     pub _id:ObjectId,
+    pub project_id:ObjectId,
     pub title:String,
     pub thread_description:String,
     pub user_messages:Option<Vec<UserMessageObject>>,
@@ -60,6 +64,7 @@ impl ThreadSerializeObject {
      pub fn build_from(thread:ThreadDeserializeObject)->ThreadSerializeObject{
         ThreadSerializeObject{
             id:thread._id.to_string(),
+            project_id:thread.project_id.to_string(),
             title:thread.title,
             thread_description:thread.thread_description,
             user_messages:thread.user_messages,
