@@ -44,6 +44,18 @@ impl SupportCollection {
             .await?)
     }
 
+    pub async fn find_thread_by_id(&self,thread_id:&str) -> Result<Cursor, Error> {
+        Ok(self
+            .collection
+            .find(
+                doc! {
+                    "_id":ObjectId::with_string(thread_id).unwrap()
+                },
+                None,
+            )
+            .await?)
+    }
+
     pub async fn insert_one<T>(&self, document: T) -> Result<InsertOneResult, Error>
     where
         T: serde::Serialize,
