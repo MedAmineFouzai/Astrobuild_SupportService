@@ -91,7 +91,7 @@ impl QueryRoot {
 
 	}
 
-	async fn get_thread_by_id(&self, ctx: &Context<'_>,thread_id:String) -> FieldResult<Vec<ThreadObject>> {
+	async fn get_thread_by_id(&self, ctx: &Context<'_>,thread_id:String) -> FieldResult<ThreadObject> {
 
 		match ctx.data_unchecked::<crate::AppState>().container.support.find_thread_by_id(&thread_id).await{
     		Ok(cursor) => {
@@ -117,7 +117,7 @@ impl QueryRoot {
         				thread_description: thread.thread_description,
         				user_messages: thread.user_messages,
 					}
-				}).collect::<Vec<ThreadObject>>())
+				}).collect::<Vec<ThreadObject>>().last())
 				
 			}
     		Err(mongodb_error) => {
