@@ -11,6 +11,8 @@ use std::{sync::Arc};
 use crate::{AppState, controllers::schema::{
 	UserMessageObject,FileOutput,FileInput,ThreadObject,Thread,ThreadSerializeObject,ThreadDeserializeObject}};
 
+use self::schema::UserMessage;
+
 
 
 #[derive(Debug)]
@@ -28,7 +30,7 @@ pub struct QueryRoot;
 #[Object]
 impl QueryRoot {
 
-	async fn messages(&self, ctx: &Context<'_>,thread_id:String) -> FieldResult<Vec<UserMessageObject>> {
+	async fn messages(&self, ctx: &Context<'_>,thread_id:String) -> FieldResult<Vec<UserMessage>> {
 
 		match ctx.data_unchecked::<crate::AppState>().container.support.find_one_by_id(&thread_id).await
         .and_then(|document| {
@@ -185,34 +187,19 @@ impl MutationRoot {
     }
 	}
 
-	async fn send_msg(&self, ctx: &Context<'_>,thread_id:String,username:String ,msg:Option<String>,file: Option<FileInput>) -> FieldResult<ID> {
+	async fn send_msg(&self, ctx: &Context<'_>,thread_id:String,username:String ,msg:String) -> FieldResult<ID> {
 		
 		let mut store = ctx.data_unchecked::<Storage>().lock().await;
 		let entry = store.vacant_entry();
 		let id: ID= entry.key().into();
 		//note file saving in not async need to use async file write
-		let file =match file {
-			Some(file)=>{
-				FileOutput{
-					name:file.name,
-					src:file.src
-				}
-			}, 
-			None=>FileOutput{
-				name:"".to_string(),
-				src:"".to_string()
-			}
-		};
-		let msg=match  msg {
-			Some(msg)=>msg,
-			None=>"".to_string()
-		};
+	
 	
 		let user =UserMessageObject{
 			id:id.clone(),
 			username:username,
 			text:Some(msg),
-			attachment:Some(file)
+	
 		};
 		entry.insert(user.clone());
 		match ctx.data_unchecked::<crate::AppState>().container.support.add_message(&thread_id,user.clone()).await

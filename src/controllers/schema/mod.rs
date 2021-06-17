@@ -20,8 +20,16 @@ pub struct UserMessageObject {
     pub id:ID,
     pub username:String,
     pub text:Option<String>,
-    pub attachment:Option<FileOutput>,
+  
+}
 
+
+#[derive(Debug,Clone,Deserialize,Serialize)]
+pub struct UserMessage{
+  
+    pub username:String,
+    pub text:Option<String>,
+  
 }
 
 #[derive(Debug,Clone,Deserialize,Serialize)]
@@ -29,7 +37,7 @@ pub struct ThreadObject {
     pub id:String,
     pub title:String,
     pub thread_description:String,
-    pub user_messages:Option<Vec<UserMessageObject>>,
+    pub user_messages:Option<Vec<UserMessage>>,
 
 }
 
@@ -38,7 +46,7 @@ pub struct Thread {
     pub project_id:ObjectId,
     pub title:String,
     pub thread_description:String,
-    pub user_messages:Option<Vec<UserMessageObject>>,
+    pub user_messages:Option<Vec<UserMessage>>,
 
 }
 #[derive(Debug,Clone,Deserialize,Serialize)]
@@ -47,7 +55,7 @@ pub struct ThreadSerializeObject {
     pub project_id:String,
     pub title:String,
     pub thread_description:String,
-    pub user_messages:Option<Vec<UserMessageObject>>,
+    pub user_messages:Option<Vec<UserMessage>>,
 
 }
 
@@ -57,7 +65,7 @@ pub struct ThreadDeserializeObject {
     pub project_id:ObjectId,
     pub title:String,
     pub thread_description:String,
-    pub user_messages:Option<Vec<UserMessageObject>>,
+    pub user_messages:Option<Vec<UserMessage>>,
 }
 
 impl ThreadSerializeObject {
@@ -83,7 +91,7 @@ impl ThreadObject {
     async fn thread_description(&self) -> &str {
         &self.thread_description
     }
-    async fn user_messages(&self) -> &Vec<UserMessageObject> {
+    async fn user_messages(&self) -> &Vec<UserMessage> {
         &self.user_messages.as_ref().unwrap()
     }
 
@@ -104,21 +112,20 @@ impl UserMessageObject {
         &self.text.as_ref().unwrap()
     }
 
-    async fn attachment(&self) -> &FileOutput {
-       &self.attachment.as_ref().unwrap()
-    }
+  
 
 }
 
 #[Object]
-impl FileOutput {
-    async fn name(&self) -> &str {
-        &self.name
+impl UserMessage {
+    async fn username(&self) -> &str {
+        &self.username
     }
-    
-    async fn src(&self) -> &str {
-        &self.src
+
+    async fn text(&self) -> &str {
+        &self.text.as_ref().unwrap()
     }
+
 
 }
 
