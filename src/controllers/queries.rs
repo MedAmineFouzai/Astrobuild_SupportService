@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use crate::models::{Support, UserMessages};
 use async_graphql::{
-    Context, Enum, Error as graphql_error, FieldResult, Object, Result, Schema, Subscription, ID,
+    Context, FieldResult, Object, ID,
 };
 
 use bson::{doc, oid::ObjectId};

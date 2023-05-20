@@ -6,7 +6,6 @@ use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse, GraphQLSubscripti
 use mongodb::{options::ClientOptions, Client, Collection};
 mod controllers;
 use actix_cors::Cors;
-use actix_files as fs;
 use controllers::{GraphQlSchema, MutationRoot, MyToken, QueryRoot, SubscriptionRoot};
 mod models;
 use load_dotenv::load_dotenv;
@@ -36,7 +35,6 @@ async fn index_ws(
     req: HttpRequest,
     payload: web::Payload,
 ) -> Result<HttpResponse> {
-    // this is a fatal change
     GraphQLSubscription::new(Schema::clone(&*schema)).start(&req, payload)
 }
 
