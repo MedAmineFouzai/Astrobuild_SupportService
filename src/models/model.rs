@@ -60,4 +60,41 @@ impl SupportCollection {
         self.collection.insert_one(document, None).await?;
         Ok(())
     }
+
+    pub async fn add_message<T>(
+        &self,
+        thread_id: &str,
+        document: T,
+    ) -> Result<Option<Support>, Error>
+    where
+        T: serde::Serialize,
+    {
+        Ok(self
+            .collection
+            .find_one_and_update(
+                doc! {
+                    "_id":match ObjectId::from_str(thread_id){
+                        Ok(user_id)=>user_id,
+                        Err(_)=>ObjectId::new()
+                    }
+                },
+                doc! {
+                  "$push":{
+                    "user_messages":match bson::to_bson(&document) {
+                        Ok(bson_document) => match bson_document.as_document() {
+                            Some(document) => document.clone(),
+                            None => Document::new(),
+                        },
+                        _ => Document::new(),
+                    }
+                  }
+                },
+                Some(
+                    FindOneAndUpdateOptions::builder()
+                        .return_document(ReturnDocument::After)
+                        .build(),
+                ),
+            )
+            .await?)
+    }
 }
