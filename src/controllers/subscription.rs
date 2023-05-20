@@ -2,7 +2,7 @@ use crate::models::UserMessages;
 use async_graphql::{Context, Enum, Object, Result, Subscription, ID};
 use futures::{Stream, StreamExt};
 
-use super::broker::{MessageBroker, Storage};
+use super::{queue::MessageBroker, Storage};
 
 pub struct SubscriptionRoot;
 
@@ -29,7 +29,10 @@ impl StreamChanged {
 
     async fn user_message(&self, ctx: &Context<'_>) -> Result<Option<UserMessages>> {
         let id = self.id.parse::<usize>()?;
-        let message=ctx.data_unchecked::<Storage>().lock().and_then(|mutex| Ok(mutex.get(id).cloned()));
+        let message = ctx
+            .data_unchecked::<Storage>()
+            .lock()
+            .and_then(|mutex| Ok(mutex.get(id).cloned()));
         Ok(message.unwrap())
     }
 }
