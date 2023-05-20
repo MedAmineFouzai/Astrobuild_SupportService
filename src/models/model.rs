@@ -3,11 +3,10 @@ use bson::{doc, oid::ObjectId, Document};
 use core::fmt::Debug;
 use mongodb::{
     error::Error,
-    options::{FindOneAndUpdateOptions, ReturnDocument},
-    Collection, Cursor,
+    Collection, Cursor, options::{FindOneAndUpdateOptions, ReturnDocument},
 };
 use std::{borrow::Borrow, str::FromStr};
-// read me update code structure spageeeeetttttiiii code ??????
+
 #[derive(Debug, Clone)]
 pub struct SupportCollection {
     collection: Collection<Support>,

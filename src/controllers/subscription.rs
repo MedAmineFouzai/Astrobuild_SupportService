@@ -7,12 +7,12 @@ use super::{queue::MessageBroker, Storage};
 pub struct SubscriptionRoot;
 
 #[derive(Enum, Eq, PartialEq, Copy, Clone)]
-enum MutationType {
+pub enum MutationType {
     Created,
 }
 
 #[derive(Clone)]
-struct StreamChanged {
+pub struct StreamChanged {
     mutation_type: MutationType,
     id: ID,
 }
